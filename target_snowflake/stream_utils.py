@@ -66,11 +66,12 @@ def adjust_timestamps_in_record(record: Dict, schema: Dict) -> None:
                         reset_new_value(record, key, type_dict['format'])
                         break
             else:
-                prop_type = schema['properties'][key]['type']
-                if ((isinstance(prop_type, list) and 'string' in prop_type) or (prop_type == 'string')) and \
-                        schema['properties'][key].get('format', None) in {'date-time', 'time', 'date'}:
-                    reset_new_value(
-                        record, key, schema['properties'][key]['format'])
+                prop = schema['properties'][key]
+                if 'type' in prop:
+                    prop_type = prop['type']
+                    if ((isinstance(prop_type, list) and 'string' in prop_type) or (prop_type == 'string')) and \
+                            prop.get('format', None) in {'date-time', 'time', 'date'}:
+                        reset_new_value(record, key, prop['format'])
 
 
 def float_to_decimal(value):
