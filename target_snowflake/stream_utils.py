@@ -66,9 +66,11 @@ def adjust_timestamps_in_record(record: Dict, schema: Dict) -> None:
                         reset_new_value(record, key, type_dict['format'])
                         break
             else:
-                if 'string' in schema['properties'][key]['type'] and \
+                prop_type = schema['properties'][key]['type']
+                if ((isinstance(prop_type, list) and 'string' in prop_type) or (prop_type == 'string')) and \
                         schema['properties'][key].get('format', None) in {'date-time', 'time', 'date'}:
-                    reset_new_value(record, key, schema['properties'][key]['format'])
+                    reset_new_value(
+                        record, key, schema['properties'][key]['format'])
 
 
 def float_to_decimal(value):
@@ -89,7 +91,8 @@ def add_metadata_values_to_record(record_message):
     extended_record = record_message['record']
     extended_record['_sdc_extracted_at'] = record_message.get('time_extracted')
     extended_record['_sdc_batched_at'] = datetime.now().isoformat()
-    extended_record['_sdc_deleted_at'] = record_message.get('record', {}).get('_sdc_deleted_at')
+    extended_record['_sdc_deleted_at'] = record_message.get(
+        'record', {}).get('_sdc_deleted_at')
 
     return extended_record
 
@@ -120,7 +123,8 @@ def stream_name_to_dict(stream_name, separator='-'):
 def get_incremental_key(singer_msg: Dict):
     """Derive incremental key from a Singer message dictionary"""
     if singer_msg['type'] != "SCHEMA":
-        raise UnexpectedMessageTypeException(f"Expecting type SCHEMA, got {singer_msg['type']}")
+        raise UnexpectedMessageTypeException(
+            f"Expecting type SCHEMA, got {singer_msg['type']}")
 
     if 'bookmark_properties' in singer_msg and len(singer_msg['bookmark_properties']) > 0:
         col = singer_msg['bookmark_properties'][0]
