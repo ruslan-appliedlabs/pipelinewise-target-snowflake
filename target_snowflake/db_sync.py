@@ -298,6 +298,7 @@ class DbSync:
             database=self.connection_config['dbname'],
             warehouse=self.connection_config['warehouse'],
             role=self.connection_config.get('role', None),
+            insecure_mode=self.connection_config.get('insecure_mode', False),
             autocommit=True,
             session_parameters={
                 # Quoted identifiers should be case sensitive
